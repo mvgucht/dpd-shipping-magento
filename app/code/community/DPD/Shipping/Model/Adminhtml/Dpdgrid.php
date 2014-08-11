@@ -189,7 +189,8 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
             $message = Mage::helper('dpd')->__('All labels have been downloaded.');
             Mage::getSingleton('core/session')->addSuccess($message);
         }
-        return $this->_zipLabelPdfArray($labelPdfArray, Mage::getBaseDir('media') . "/dpd/orderlabels/undownloaded.zip", true);
+		// Call the new joinLabelPdfArray function, don't forget to change the file extension of the outputfile. (*.zip --> *.pdf)
+        return $this->_joinLabelPdfArray($labelPdfArray, Mage::getBaseDir('media') . "/dpd/orderlabels/undownloaded.pdf", true);
     }
 
     /**
@@ -228,5 +229,53 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
             return false;
         }
     }
+    /**
+     * Join the labels in 1 pdf
+     *
+     * @param array $files
+     * @param string $destination
+     * @param bool $overwrite
+     * @return bool|string
+     */
+	protected function _joinLabelPdfArray($files = array(), $destination = '', $overwrite = false)
+	{
+		if (file_exists($destination) && !$overwrite) {
+			return false;
+		}
+		$valid_files = array();
+		if (is_array($files)){
+			foreach($files as $file){
+				if (file_exists($file)){
+					$valid_files[] = $file;
+				}
+			}
+		}
 
+		if (count($valid_files)){
+			if(count($valid_files) > 1) {
+				$cmd = "";
+				
+				switch (PHP_OS){
+					case "WINNT":
+						$cmd = "gswin32 "; //Windows path variable must be extended on server!!
+						break;
+					default:
+						$cmd = "gs ";
+				}
+					
+				$cmd .= "-q -dNOPAUSE -dBATCH -dPatternImagemask=true -sDEVICE=pdfwrite -sOutputFile=".$destination." ";
+				foreach($valid_files as $file){
+					$cmd .= $file." ";
+				}
+				$result = shell_exec($cmd);
+				Mage::helper('dpd')->log($result, 6);
+
+				return $destination;
+			} else {
+				return $valid_files[0];
+			}
+		} else {
+			return false;
+		} 
+	}
 }

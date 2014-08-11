@@ -174,7 +174,8 @@ class DPD_Shipping_Adminhtml_DpdorderController extends Mage_Adminhtml_Controlle
                 Mage::getSingleton('core/session')->addError($message);
                 $this->_redirect('*/*/index');
             } else {
-                $this->_prepareDownloadResponse('dpd_undownloaded.zip', file_get_contents($path));
+                //$this->_prepareDownloadResponse('dpd_undownloaded.zip', file_get_contents($path));
+                $this->_prepareDownloadResponse('dpd_undownloaded.pdf', file_get_contents($path));
             }
         } catch (Exception $e) {
             Mage::helper('dpd')->log($e->getMessage(), Zend_Log::ERR);
