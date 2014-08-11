@@ -20,6 +20,20 @@ class DPD_Shipping_Model_Carrier_Dpdparcelshops extends Mage_Shipping_Model_Carr
      */
     protected $_code = 'dpdparcelshops';
 
+	/**
+	 * Check if a product can be delivered in parcelshop (by attribute delivery_in_parcelshop)
+	 */
+	private function isDPSPossible($productId){
+		$product = Mage::getModel('catalog/product')->load($productId);
+		$attributes = $product->getAttributes();
+		
+		foreach ($attributes as $attribute) {
+			if($attribute->getAttributeCode() == 'delivery_in_parcelshop'){
+				return $attribute->getFrontend()->getValue($product);
+			}
+		}
+	}
+	
     /**
      * Collect shipping method price and set all data selected in config.
      *
@@ -45,6 +59,9 @@ class DPD_Shipping_Model_Carrier_Dpdparcelshops extends Mage_Shipping_Model_Carr
             if ($request->getAllItems()) {
                 $freePackageValue = 0;
                 foreach ($request->getAllItems() as $item) {
+					if ($this->isDPSPossible($item->getProduct()->getId()) == "No") {
+						return false;
+					}
                     if ($item->getProduct()->isVirtual() || $item->getParentItem()) {
                         continue;
                     }
