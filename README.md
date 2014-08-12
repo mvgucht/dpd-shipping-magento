@@ -37,3 +37,9 @@ For this addition to work you need to limit the addresslines to 1.
 
 GOTO System ==> Configuration ==> Customer Configuration ==> Name and address options
 And set 'Number of lines in a street address' to 1
+
+export-orders-to-delisprint
+---------------------------
+
+This code will add a new action to DPD Orders page/grid.
+Files are created in <magentoroot>/var/export/delisprint so you can implement an automated import in delisprint.
