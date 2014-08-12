@@ -228,5 +228,105 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
             return false;
         }
     }
+	
+	/**
+     * Creates an export to delisprint
+     *
+     * @param array $orderIds
+     */
+	
+	public function delisprintExportOrders($orderIds)
+	{
+		$csvShipmentsArray = array();
+        foreach ($orderIds as $orderId) {
+			$order = Mage::getModel('sales/order')->load($orderId);
+			$csvString = $this->_getOrderCsvData($order);
+			if($csvString != ""){
+				$csvShipmentsArray[] = $csvString;
+			}
+		}
+		//$output = implode("\r\n", $csvShipmentsArray);
+		//print($output);
+		
+		$path = Mage::getBaseDir('var') . DS . 'export' . DS; //best would be to add exported path through config
+		$name = md5(microtime());
+        $file = $path . DS . $name . '.csv';
+		while (file_exists($file)) {
+            sleep(1);
+            $name = md5(microtime());
+            $file = $path . DS . $name . '.csv';
+        }
+		
+		$io = new Varien_Io_File();
+		$io->setAllowCreateFolders(true);
+        $io->open(array('path' => $path));
+        $io->streamOpen($file, 'w+');
+        $io->streamLock(true);
+		$io->streamWrite(implode("\r\n", $csvShipmentsArray));
+		$io->streamUnlock();
+        $io->streamClose();
+		
+		return array(
+            'type'  => 'filename',
+            'value' => $file,
+            'rm'    => false // can delete file after use
+        );
+	}
+	
+	protected function _getOrderCsvData($order)
+    {
+		$csvLineArray = array();
+		
+		$shippingMethod = $order->getShippingMethod();
+		switch ($shippingMethod){
+			case "dpdclassic_dpdclassic":
+				$csvLineArray[] = "NP";
+				break;
+			case "dpdparcelshops_dpdparcelshops":
+				$csvLineArray[] = "NCP,PRO,PS";
+				break;
+		}
+		$billingAddress = $order->getBillingAddress();
+		
+		$csvLineArray[] = $billingAddress->getFirstname() . " " . $billingAddress->getLastname();
+		$csvLineArray[] = $billingAddress->getStreet(1) . " " . $billingAddress->getStreet(2);
+		$csvLineArray[] = $billingAddress->getCountry();
+		$csvLineArray[] = $billingAddress->getPostcode();
+		$csvLineArray[] = $billingAddress->getCity();
+		
+		$csvLineArray[] = $order->getRealOrderId();
+		
+		$locale = Mage::app()->getStore($order->getStoreId())->getConfig('general/locale/code');
+        $localeCode = explode('_', $locale);
+		
+		$csvLineArray[] = 'E';
+		$csvLineArray[] = $billingAddress->getEmail();
+		$csvLineArray[] = '904';
+		$csvLineArray[] = $localeCode[0];
+		
+		$shipment = $order->prepareShipment();
+        $shipment->register();
+        $weight = Mage::helper('dpd')->calculateTotalShippingWeight($shipment);
+		
+		$csvLineArray[] = $weight;
+		$csvLineArray[] = '1';
+		
+		if($shippingMethod == "dpdparcelshops_dpdparcelshops"){
+			$shippingAddress = $order->getShippingAddress();
+			
+			$csvLineArray[] = $billingAddress->getLastname();
+			$csvLineArray[] = $shippingAddress->getStreet(1) . " " . $shippingAddress->getStreet(2);
+			$csvLineArray[] = $shippingAddress->getCountry();
+			$csvLineArray[] = $shippingAddress->getPostcode();
+			$csvLineArray[] = $shippingAddress->getCity();
+			$csvLineArray[] = $order->getDpdParcelshopId();
+		}
+		
+		if(!count($csvLineArray)) {
+			return "";
+		} else {
+			return implode(";", $csvLineArray);
+		}
+	}
 
 }

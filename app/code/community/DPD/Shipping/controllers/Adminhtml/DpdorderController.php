@@ -183,6 +183,34 @@ class DPD_Shipping_Adminhtml_DpdorderController extends Mage_Adminhtml_Controlle
             $this->_redirect('*/*/index');
         }
     }
+	
+	/**
+     * Generate a Delisprint Export (*.csv) of selected orders.
+     */
+    public function delisprintExportAction()
+    {
+		ini_set('max_execution_time', 120);
+        $orderIds = $this->getRequest()->getParam('entity_id');
+        
+		try {
+            $path = Mage::getModel('dpd/adminhtml_dpdgrid')->delisprintExportOrders($orderIds);
+            
+			if (!$path) {
+                $message = Mage::helper('dpd')->__('No labels for export found.');
+                Mage::getSingleton('core/session')->addError($message);
+                $this->_redirect('*/*/index');
+            } else {
+				$filename = "DPD".date("Ymdhis").".csv";
+                $this->_prepareDownloadResponse($filename, $path);
+            }
+		
+        } catch (Exception $e) {
+            Mage::helper('dpd')->log($e->getMessage(), Zend_Log::ERR);
+            $message = Mage::helper('dpd')->__("The file could not be downloaded, please check your DPD logs.");
+            Mage::getSingleton('core/session')->addError($message);
+            $this->_redirect('*/*/index');
+        }
+    }
 
     /**
      * Fetches the label and puts it in a download response.

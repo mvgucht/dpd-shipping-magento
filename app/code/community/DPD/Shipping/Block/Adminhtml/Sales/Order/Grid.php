@@ -225,6 +225,10 @@ class DPD_Shipping_Block_Adminhtml_Sales_Order_Grid extends Mage_Adminhtml_Block
             'url' => $this->getUrl('*/*/dowloadAllUndownloaded'),
             'confirm' => Mage::helper('dpd')->__('Please refresh the page after downloading to review the confirmation messages including any problems encountered. Continue?')
         ));
+		$this->getMassactionBlock()->addItem('downloadDelisprintExport', array(
+            'label' => Mage::helper('dpd')->__('Export to Delisprint'),
+            'url' => $this->getUrl('*/*/delisprintExport'),
+        ));
         return $this;
     }
 
