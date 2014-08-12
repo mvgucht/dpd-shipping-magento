@@ -248,7 +248,7 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
 		//$output = implode("\r\n", $csvShipmentsArray);
 		//print($output);
 		
-		$path = Mage::getBaseDir('var') . DS . 'export' . DS; //best would be to add exported path through config
+		$path = Mage::getBaseDir('var') . DS . 'export' . DS . 'delisprint' . DS; //best would be to add exported path through config
 		$name = md5(microtime());
         $file = $path . DS . $name . '.csv';
 		while (file_exists($file)) {
