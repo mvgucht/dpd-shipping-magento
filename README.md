@@ -3,8 +3,8 @@ Master
 
 This branch will hold a copy of each extension update published on magento-connect.
 
-Forks
-=====
+Branches
+========
 
 delivery-method-filtered-by-attribute
 -------------------------------------
