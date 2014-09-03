@@ -72,6 +72,11 @@ class DPD_Shipping_Model_Webservice extends Mage_Core_Model_Abstract
      * XML path to configuration setting for password.
      */
     CONST XML_PATH_DPD_PASSWORD = 'shipping/dpdclassic/password';
+    
+    /**
+     * XML path to configuration setting for costumer number.
+     */
+    CONST XML_PATH_DPD_CUSTOMER_NUMBER = 'shipping/dpdclassic/customernumber';
 
     /**
      * XML path to configuration setting for sender name.
@@ -250,7 +255,8 @@ class DPD_Shipping_Model_Webservice extends Mage_Core_Model_Abstract
             'houseNo' => Mage::getStoreConfig(self::XML_PATH_DPD_SENDER_STREETNUMBER),
             'country' => Mage::getStoreConfig(self::XML_PATH_DPD_SENDER_COUNTRY),
             'zipCode' => Mage::getStoreConfig(self::XML_PATH_DPD_SENDER_ZIPCODE),
-            'city' => Mage::getStoreConfig(self::XML_PATH_DPD_SENDER_CITY)
+            'city' => Mage::getStoreConfig(self::XML_PATH_DPD_SENDER_CITY),
+	    'customerNumber' => Mage::getStoreConfig(self::XML_PATH_DPD_CUSTOMER_NUMBER)
         );
     }
 
