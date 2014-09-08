@@ -68,11 +68,11 @@
         </resources>
         <template>
             <email>
-                <dpd_returnlabel_email_template translate="label" module="dpd">
+                <shipping_dpdclassic_return_email_template translate="label" module="dpd">
                     <label>Dpd Returnlabel Email</label>
                     <file>sales/dpd_returnlabel.html</file>
                     <type>html</type>
-                </dpd_returnlabel_email_template>
+                </shipping_dpdclassic_return_email_template>
             </email>
         </template>
     </global>

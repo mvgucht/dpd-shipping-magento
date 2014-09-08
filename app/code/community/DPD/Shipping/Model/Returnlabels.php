@@ -102,8 +102,10 @@ class DPD_Shipping_Model_Returnlabels extends Mage_Core_Model_Abstract
                     );
             }
         }
+		$template = Mage::getStoreConfig('shipping/dpdclassic/return_email_template', Mage::app()->getStore()->getId());
+		Mage::helper('dpd')->log('Selected template: '.$template, Zend_Log::ERR);
         $transactionalEmail
-            ->sendTransactional('dpd_returnlabel_email_template',
+            ->sendTransactional($template, //'dpd_returnlabel_email_template',
                 array('name' => Mage::getStoreConfig('trans_email/ident_support/name'),
                     'email' => Mage::getStoreConfig('trans_email/ident_support/email')),
                 $billingAddress->getEmail(),
