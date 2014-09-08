@@ -10,3 +10,5 @@ By adding this to your products you can manage a product individually if it can 
 
 NOTE: When creating the attribute set the default value to 'YES',
 this will ensure that every product you create will be deliverable in a parcelshop by default.
+
+UPDATE: For this code to work you neet to set the price calculation to tablerate, otherwise the price isn't calculated by added product and parcelshops delivery method will always show.
