@@ -302,7 +302,7 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
 		$csvLineArray[] = 'E';
 		$csvLineArray[] = $billingAddress->getEmail();
 		$csvLineArray[] = '904';
-		$csvLineArray[] = $localeCode[0];
+		$csvLineArray[] = strtoupper($localeCode[0]);
 		
 		$shipment = $order->prepareShipment();
         $shipment->register();
@@ -314,7 +314,7 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
 		if($shippingMethod == "dpdparcelshops_dpdparcelshops"){
 			$shippingAddress = $order->getShippingAddress();
 			
-			$csvLineArray[] = $billingAddress->getLastname();
+			$csvLineArray[] = $shippingAddress->getLastname();
 			$csvLineArray[] = $shippingAddress->getStreet(1) . " " . $shippingAddress->getStreet(2);
 			$csvLineArray[] = $shippingAddress->getCountry();
 			$csvLineArray[] = $shippingAddress->getPostcode();
