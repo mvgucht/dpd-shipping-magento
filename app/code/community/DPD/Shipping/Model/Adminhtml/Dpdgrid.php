@@ -189,7 +189,7 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
             $message = Mage::helper('dpd')->__('All labels have been downloaded.');
             Mage::getSingleton('core/session')->addSuccess($message);
         }
-        return $this->_zipLabelPdfArray($labelPdfArray, Mage::getBaseDir('media') . "/dpd/orderlabels/undownloaded.zip", true);
+        return $this->_zipLabelPdfArray($labelPdfArray, Mage::getBaseDir('media') . "/dpd/orderlabels/undownloaded.zip");
     }
 
     /**
@@ -197,14 +197,10 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
      *
      * @param array $files
      * @param string $destination
-     * @param bool $overwrite
      * @return bool|string
      */
-    protected function _zipLabelPdfArray($files = array(), $destination = '', $overwrite = false)
+    protected function _zipLabelPdfArray($files = array(), $destination = '')
     {
-        if (file_exists($destination) && !$overwrite) {
-            return false;
-        }
         $valid_files = array();
         if (is_array($files)) {
             foreach ($files as $file) {
@@ -215,7 +211,7 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
         }
         if (count($valid_files)) {
             $zip = new ZipArchive();
-            if ($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+            if ($zip->open($destination, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE) !== true) {
                 return false;
             }
             foreach ($valid_files as $file) {
