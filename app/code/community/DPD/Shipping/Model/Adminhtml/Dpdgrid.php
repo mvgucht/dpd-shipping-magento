@@ -284,11 +284,11 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
 			$parcelshop = true;
 		}
 		if ($parcelshop) {
-			$csvLineArray[] = "NCP,PRO";
+			$csvLineArray[] = "NCP,PRO,PS";
 			$recipient = $billingAddress;
 		}
 		else{
-			$csvLineArray[] = "NCP,PRO,PS";
+			$csvLineArray[] = "NCP,PRO";
 			$recipient = $shippingAddress;
 		}
 		
