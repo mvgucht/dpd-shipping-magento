@@ -30,6 +30,7 @@ class DPD_Shipping_Model_Returnlabels extends Mage_Core_Model_Abstract
     public function generateLabelAndSave($orderId)
     {
         $order = Mage::getModel('sales/order')->load($orderId);
+        $parcelshop = false;
         if (strpos($order->getShippingMethod(), 'parcelshop') !== false) {
             $parcelshop = true;
         }
