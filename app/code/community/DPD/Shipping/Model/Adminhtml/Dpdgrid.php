@@ -238,7 +238,7 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
 	public function delisprintExportOrders($orderIds)
 	{
 		$csvShipmentsArray = array();
-        foreach ($orderIds as $orderId) {
+		foreach ($orderIds as $orderId) {
 			$order = Mage::getModel('sales/order')->load($orderId);
 			$csvString = $this->_getOrderCsvData($order);
 			if($csvString != ""){
@@ -250,70 +250,72 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
 		
 		$path = Mage::getBaseDir('var') . DS . 'export' . DS . 'delisprint' . DS; //best would be to add exported path through config
 		$name = md5(microtime());
-        $file = $path . DS . $name . '.csv';
+		$file = $path . DS . $name . '.csv';
 		while (file_exists($file)) {
-            sleep(1);
-            $name = md5(microtime());
-            $file = $path . DS . $name . '.csv';
-        }
+			sleep(1);
+			$name = md5(microtime());
+			$file = $path . DS . $name . '.csv';
+		}
 		
 		$io = new Varien_Io_File();
 		$io->setAllowCreateFolders(true);
-        $io->open(array('path' => $path));
-        $io->streamOpen($file, 'w+');
-        $io->streamLock(true);
+		$io->open(array('path' => $path));
+		$io->streamOpen($file, 'w+');
+		$io->streamLock(true);
 		$io->streamWrite(implode("\r\n", $csvShipmentsArray));
 		$io->streamUnlock();
-        $io->streamClose();
+		$io->streamClose();
 		
 		return array(
-            'type'  => 'filename',
-            'value' => $file,
-            'rm'    => false // can delete file after use
-        );
+			'type'  => 'filename',
+			'value' => $file,
+			'rm'    => false // can delete file after use
+	        );
 	}
 	
 	protected function _getOrderCsvData($order)
-    {
+    	{
 		$csvLineArray = array();
 		
-		$shippingMethod = $order->getShippingMethod();
-		switch ($shippingMethod){
-			case "dpdclassic_dpdclassic":
-				$csvLineArray[] = "NP";
-				break;
-			case "dpdparcelshops_dpdparcelshops":
-				$csvLineArray[] = "NCP,PRO,PS";
-				break;
-		}
+		$parcelshop = false;
+		$billingAddress = $order->getBillingAddress();
 		$shippingAddress = $order->getShippingAddress();
+		if (strpos($order->getShippingMethod(), 'parcelshop') !== false) {
+			$parcelshop = true;
+		}
+		if ($parcelshop) {
+			$csvLineArray[] = "NCP,PRO";
+			$recipient = $billingAddress;
+		}
+		else{
+			$csvLineArray[] = "NCP,PRO,PS";
+			$recipient = $shippingAddress;
+		}
 		
-		$csvLineArray[] = $shippingAddress->getFirstname() . " " . $shippingAddress->getLastname();
-		$csvLineArray[] = $shippingAddress->getStreet(1) . " " . $shippingAddress->getStreet(2);
-		$csvLineArray[] = $shippingAddress->getCountry();
-		$csvLineArray[] = $shippingAddress->getPostcode();
-		$csvLineArray[] = $shippingAddress->getCity();
+		$csvLineArray[] = $recipient->getFirstname() . " " . $recipient->getLastname();
+		$csvLineArray[] = $recipient->getStreet(1) . " " . $recipient->getStreet(2);
+		$csvLineArray[] = $recipient->getCountry();
+		$csvLineArray[] = $recipient->getPostcode();
+		$csvLineArray[] = $recipient->getCity();
 		
 		$csvLineArray[] = $order->getRealOrderId();
 		
 		$locale = Mage::app()->getStore($order->getStoreId())->getConfig('general/locale/code');
-        $localeCode = explode('_', $locale);
+       		$localeCode = explode('_', $locale);
 		
 		$csvLineArray[] = 'E';
-		$csvLineArray[] = $billingAddress->getEmail();
+		$csvLineArray[] = $recipient->getEmail();
 		$csvLineArray[] = '904';
 		$csvLineArray[] = strtoupper($localeCode[0]);
 		
 		$shipment = $order->prepareShipment();
-        $shipment->register();
-        $weight = Mage::helper('dpd')->calculateTotalShippingWeight($shipment);
+		$shipment->register();
+        	$weight = Mage::helper('dpd')->calculateTotalShippingWeight($shipment);
 		
 		$csvLineArray[] = $weight;
 		$csvLineArray[] = '1';
 		
-		if($shippingMethod == "dpdparcelshops_dpdparcelshops"){
-			$shippingAddress = $order->getShippingAddress();
-			
+		if($parcelshop){
 			$csvLineArray[] = $shippingAddress->getLastname();
 			$csvLineArray[] = $shippingAddress->getStreet(1) . " " . $shippingAddress->getStreet(2);
 			$csvLineArray[] = $shippingAddress->getCountry();
