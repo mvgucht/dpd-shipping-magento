@@ -64,6 +64,7 @@ class DPD_Shipping_Adminhtml_DpdorderController extends Mage_Adminhtml_Controlle
     public function generateRetourLabelAction()
     {
         $orderId = $this->getRequest()->getParam('order_id');
+        $returnId = null;
         try {
             $returnId = Mage::getModel('dpd/returnlabels')->generateLabelAndSave($orderId);
             if($returnId){
