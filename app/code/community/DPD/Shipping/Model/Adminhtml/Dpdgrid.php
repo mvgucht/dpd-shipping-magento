@@ -286,13 +286,13 @@ class DPD_Shipping_Model_Adminhtml_Dpdgrid extends Mage_Core_Model_Abstract
 				$csvLineArray[] = "NCP,PRO,PS";
 				break;
 		}
-		$billingAddress = $order->getBillingAddress();
+		$shippingAddress = $order->getShippingAddress();
 		
-		$csvLineArray[] = $billingAddress->getFirstname() . " " . $billingAddress->getLastname();
-		$csvLineArray[] = $billingAddress->getStreet(1) . " " . $billingAddress->getStreet(2);
-		$csvLineArray[] = $billingAddress->getCountry();
-		$csvLineArray[] = $billingAddress->getPostcode();
-		$csvLineArray[] = $billingAddress->getCity();
+		$csvLineArray[] = $shippingAddress->getFirstname() . " " . $shippingAddress->getLastname();
+		$csvLineArray[] = $shippingAddress->getStreet(1) . " " . $shippingAddress->getStreet(2);
+		$csvLineArray[] = $shippingAddress->getCountry();
+		$csvLineArray[] = $shippingAddress->getPostcode();
+		$csvLineArray[] = $shippingAddress->getCity();
 		
 		$csvLineArray[] = $order->getRealOrderId();
 		
