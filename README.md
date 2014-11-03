@@ -1,3 +1,9 @@
+DEPRECATED
+----------
+
+Please find a separate extension adding these options here: https://github.com/DPDBeNeLux/magento-DPD_DelisPrintExport
+
+
 export-orders-to-delisprint
 ---------------------------
 
